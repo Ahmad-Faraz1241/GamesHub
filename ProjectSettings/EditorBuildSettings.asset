@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 0
+    path: Assets/Scenes/AdditiveLoader/LOADER.unity
+    guid: 69e24343b77dc7a47895ecf74b7a57fc
+  - enabled: 1
+    path: Assets/Scenes/HOP/DS1.unity
+    guid: a0f33d865fa706047ba225449e543073
+  - enabled: 1
+    path: Assets/Scenes/ELEVATE/SC1.unity
+    guid: 50500ab01bed49e4a9b80d7b7867af7d
+  m_configObjects: {}
