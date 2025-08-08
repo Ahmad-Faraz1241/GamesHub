@@ -12,14 +12,20 @@ TagManager:
   - Ground
   - Tile
   - FakeTile
+  - GameRoot
+  - Bubble
+  - GridBubble
+  - ShooterBubble
+  - ShootBubble
+  - FallingBubble
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - ShooterLayer
   - Water
   - UI
-  - 
+  - GridLayer
   - 
   - 
   - 

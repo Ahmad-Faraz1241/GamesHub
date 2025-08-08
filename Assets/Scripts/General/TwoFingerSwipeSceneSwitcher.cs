@@ -1,39 +1,30 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
-using UnityEngine.UI;
 
 public class TwoFingerSwipeSceneSwitcher : MonoBehaviour
 {
-    [Header("Swipe Settings")]
     public float minSwipeDistance = 100f;
-    public float overlayDuration = 0.1f; // Time to keep overlay before revealing
 
     private Vector2 startTouchPos;
     private Vector2 endTouchPos;
-    private bool isSwitching = false;
-    private string otherScene;
-    private Image overlayImage;
+    private static string otherScene;
+    private static AsyncOperation preloadOperation;
+
+    // Time tracking
+    private static float switchStartTime = -1f;
 
     void Start()
     {
-        // Cache the other scene name
-        string currentScene = SceneManager.GetActiveScene().name;
-        int sceneCount = SceneManager.sceneCountInBuildSettings;
-
-        for (int i = 0; i < sceneCount; i++)
+        // If coming from another scene, calculate and log duration
+        if (switchStartTime > 0)
         {
-            string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
-            string sceneName = System.IO.Path.GetFileNameWithoutExtension(scenePath);
-
-            if (sceneName != currentScene)
-            {
-                otherScene = sceneName;
-                break;
-            }
+            float switchDuration = Time.time - switchStartTime;
+            Debug.Log("Scene switch duration: " + switchDuration.ToString("F3") + " seconds");
+            switchStartTime = -1f; // reset
         }
 
-        CreateOverlay();
+        CacheOtherSceneName();
+        PreloadScene();
     }
 
     void Update()
@@ -41,8 +32,7 @@ public class TwoFingerSwipeSceneSwitcher : MonoBehaviour
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow))
         {
-            if (!isSwitching)
-                StartCoroutine(SwitchToOtherScene());
+            ActivatePreloadedScene();
         }
 #else
         if (Input.touchCount == 2)
@@ -50,9 +40,7 @@ public class TwoFingerSwipeSceneSwitcher : MonoBehaviour
             Touch touch = Input.GetTouch(0);
 
             if (touch.phase == TouchPhase.Began)
-            {
                 startTouchPos = touch.position;
-            }
             else if (touch.phase == TouchPhase.Ended)
             {
                 endTouchPos = touch.position;
@@ -64,58 +52,50 @@ public class TwoFingerSwipeSceneSwitcher : MonoBehaviour
 
     void DetectSwipe()
     {
-        if (isSwitching) return;
-
         float swipeDistance = Vector2.Distance(startTouchPos, endTouchPos);
-
         if (swipeDistance >= minSwipeDistance)
         {
             Vector2 swipeDir = endTouchPos - startTouchPos;
 
             if (Mathf.Abs(swipeDir.y) > Mathf.Abs(swipeDir.x))
             {
-                StartCoroutine(SwitchToOtherScene());
+                ActivatePreloadedScene();
             }
         }
     }
 
-    IEnumerator SwitchToOtherScene()
+    void CacheOtherSceneName()
     {
-        if (string.IsNullOrEmpty(otherScene)) yield break;
-        isSwitching = true;
+        string currentScene = SceneManager.GetActiveScene().name;
+        int sceneCount = SceneManager.sceneCountInBuildSettings;
 
-        // Show black overlay instantly
-        overlayImage.color = Color.black;
-        overlayImage.enabled = true;
+        for (int i = 0; i < sceneCount; i++)
+        {
+            string path = SceneUtility.GetScenePathByBuildIndex(i);
+            string name = System.IO.Path.GetFileNameWithoutExtension(path);
 
-        // Wait short duration to hide load
-        yield return new WaitForSeconds(overlayDuration);
-
-        // Load other scene in background
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(otherScene, LoadSceneMode.Single);
-        asyncLoad.allowSceneActivation = true;
-        while (!asyncLoad.isDone)
-            yield return null;
+            if (name != currentScene)
+            {
+                otherScene = name;
+                break;
+            }
+        }
     }
 
-    void CreateOverlay()
+    void PreloadScene()
     {
-        GameObject overlayObj = new GameObject("BlackOverlay");
-        Canvas canvas = overlayObj.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        overlayObj.AddComponent<CanvasScaler>();
-        overlayObj.AddComponent<GraphicRaycaster>();
+        if (string.IsNullOrEmpty(otherScene)) return;
 
-        overlayImage = overlayObj.AddComponent<Image>();
-        overlayImage.color = new Color(0, 0, 0, 0); // start transparent
+        preloadOperation = SceneManager.LoadSceneAsync(otherScene);
+        preloadOperation.allowSceneActivation = false;
+    }
 
-        RectTransform rt = overlayImage.rectTransform;
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.offsetMin = Vector2.zero;
-        rt.offsetMax = Vector2.zero;
-
-        DontDestroyOnLoad(overlayObj); // persist between scenes
-        overlayImage.enabled = false;
+    void ActivatePreloadedScene()
+    {
+        if (preloadOperation != null && !preloadOperation.allowSceneActivation)
+        {
+            switchStartTime = Time.time; // Record time before activation
+            preloadOperation.allowSceneActivation = true;
+        }
     }
 }
