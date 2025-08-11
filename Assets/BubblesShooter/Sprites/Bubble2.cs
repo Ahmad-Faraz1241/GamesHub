@@ -6,38 +6,56 @@ public class Bubble2 : MonoBehaviour
     private Rigidbody2D rb;
     private bool isSnapped = false;
 
+    [Header("Audio Settings")]
+    public AudioClip snapSound;  // Add this to assign the snap sound in the Unity Inspector
+    private AudioSource audioSource;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        audioSource = gameObject.AddComponent<AudioSource>();  // Add an AudioSource component to the bubble
+        audioSource.playOnAwake = false; // Make sure it doesn't play on awake
     }
 
     void OnCollisionEnter2D(Collision2D collision)
-{
-    if (isSnapped) return;
-
-    if (collision.gameObject.CompareTag("GridBubble") || 
-        collision.gameObject.CompareTag("Wall") || 
-        collision.gameObject.CompareTag("Ceiling"))
     {
-        SnapToGrid();
+        if (isSnapped) return;
+
+        if (collision.gameObject.CompareTag("GridBubble") ||
+            collision.gameObject.CompareTag("Wall") ||
+            collision.gameObject.CompareTag("Ceiling"))
+        {
+            SnapToGrid();
+        }
     }
-}
 
-void SnapToGrid()
-{
-    Vector2Int gridPos = BubbleGridManager2.Instance.GetNearestGridPosition(transform.position);
-    Vector3 snapPos = BubbleGridManager2.Instance.GetWorldPositionFromGrid(gridPos);
+    void SnapToGrid()
+    {
+        Vector2Int gridPos = BubbleGridManager2.Instance.GetNearestGridPosition(transform.position);
+        Vector3 snapPos = BubbleGridManager2.Instance.GetWorldPositionFromGrid(gridPos);
 
-    transform.position = snapPos;
-    rb.isKinematic = true;
-    rb.velocity = Vector2.zero;
+        transform.position = snapPos;
+        rb.isKinematic = true;
+        rb.velocity = Vector2.zero;
 
-    BubbleGridManager2.Instance.RegisterBubble(gridPos, this);
-    BubbleGridManager2.Instance.CheckMatchesFrom(gridPos);
+        // Play the snap sound when the bubble snaps to the grid
+        PlaySnapSound();
 
-    isSnapped = true;
-    gameObject.tag = "GridBubble";
-}
+        BubbleGridManager2.Instance.RegisterBubble(gridPos, this);
+        BubbleGridManager2.Instance.CheckMatchesFrom(gridPos);
+
+        isSnapped = true;
+        gameObject.tag = "GridBubble";
+    }
+
+    void PlaySnapSound()
+    {
+        if (snapSound != null)
+        {
+            audioSource.PlayOneShot(snapSound);
+        }
+    }
+
     public void StartFallingAndDestroy()
     {
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
@@ -50,5 +68,4 @@ void SnapToGrid()
         // Destroy after 3 seconds so it has time to fall
         Destroy(gameObject, 3f);
     }
-
 }

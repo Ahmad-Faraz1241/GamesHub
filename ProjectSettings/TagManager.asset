@@ -18,6 +18,7 @@ TagManager:
   - ShooterBubble
   - ShootBubble
   - FallingBubble
+  - Wall
   layers:
   - Default
   - TransparentFX
