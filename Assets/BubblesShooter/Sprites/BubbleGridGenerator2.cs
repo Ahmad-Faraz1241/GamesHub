@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Generates a staggered grid using the manager's math so snapping aligns perfectly.
-/// </summary>
+
 public class BubbleGridGenerator2 : MonoBehaviour
 {
     public GameObject[] bubblePrefabs;
@@ -16,7 +14,7 @@ public class BubbleGridGenerator2 : MonoBehaviour
     {
         if (BubbleGridManager2.Instance == null)
         {
-            Debug.LogError("[BubbleGridGenerator2] No BubbleGridManager2 found in scene.");
+           
             return;
         }
 
@@ -30,9 +28,11 @@ public class BubbleGridGenerator2 : MonoBehaviour
     {
         if (bubblePrefabs == null || bubblePrefabs.Length == 0)
         {
-            Debug.LogWarning("[BubbleGridGenerator2] No bubble prefabs assigned.");
+           
             return;
         }
+
+       
 
         for (int r = 0; r < rows; r++)
         {
@@ -41,13 +41,27 @@ public class BubbleGridGenerator2 : MonoBehaviour
                 Vector2Int gridPos = new Vector2Int(c, r);
                 Vector3 spawnWorld = BubbleGridManager2.Instance.GetWorldPositionFromGrid(gridPos);
 
-                int rand = Random.Range(0, bubblePrefabs.Length);
-                GameObject prefab = bubblePrefabs[rand];
+              
+                int prefabIndex = (r * columns + c) % bubblePrefabs.Length;
+
+               
+                GameObject prefab = bubblePrefabs[prefabIndex];
                 GameObject go = Instantiate(prefab, spawnWorld, Quaternion.identity, transform);
 
                 Bubble2 b = go.GetComponent<Bubble2>();
                 if (b != null)
-                    b.type = (BubbleType)rand;
+                {
+                   
+                    b.type = (BubbleType)(prefabIndex % 3);
+
+                    
+                }
+                else
+                {
+                    
+                    Destroy(go);
+                    continue;
+                }
 
                 go.tag = "GridBubble";
 
@@ -55,21 +69,27 @@ public class BubbleGridGenerator2 : MonoBehaviour
                 if (col != null) col.enabled = true;
 
                 BubbleGridManager2.Instance.RegisterBubble(gridPos, b);
+
+                
             }
         }
 
-        Debug.Log("[BubbleGridGenerator2] Grid generated. rows=" + rows + " cols=" + columns);
+        
+
+        
+        BubbleGridManager2.Instance.ValidateGridTypes();
     }
+
 
     private IEnumerator ClearInitialMatchesNextFrame()
     {
-        yield return null; // let registrations settle
+        yield return null; 
 
         var positions = BubbleGridManager2.Instance.GetAllRegisteredPositions();
         foreach (var pos in positions)
         {
             BubbleGridManager2.Instance.CheckMatchesFrom(pos);
-            yield return null; // avoid big hitch
+            yield return null; 
         }
     }
 }

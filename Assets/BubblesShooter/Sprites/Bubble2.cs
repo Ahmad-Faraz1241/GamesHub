@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 
 public class Bubble2 : MonoBehaviour
 {
@@ -7,14 +8,14 @@ public class Bubble2 : MonoBehaviour
     private bool isSnapped = false;
 
     [Header("Audio Settings")]
-    public AudioClip snapSound;  // Add this to assign the snap sound in the Unity Inspector
+    public AudioClip snapSound;
     private AudioSource audioSource;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        audioSource = gameObject.AddComponent<AudioSource>();  // Add an AudioSource component to the bubble
-        audioSource.playOnAwake = false; // Make sure it doesn't play on awake
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -22,8 +23,8 @@ public class Bubble2 : MonoBehaviour
         if (isSnapped) return;
 
         if (collision.gameObject.CompareTag("GridBubble") ||
-            collision.gameObject.CompareTag("Wall") ||
-            collision.gameObject.CompareTag("Ceiling"))
+            collision.gameObject.CompareTag("Wall"))
+
         {
             SnapToGrid();
         }
@@ -38,10 +39,12 @@ public class Bubble2 : MonoBehaviour
         rb.isKinematic = true;
         rb.velocity = Vector2.zero;
 
-        // Play the snap sound when the bubble snaps to the grid
+
         PlaySnapSound();
 
         BubbleGridManager2.Instance.RegisterBubble(gridPos, this);
+
+
         BubbleGridManager2.Instance.CheckMatchesFrom(gridPos);
 
         isSnapped = true;
@@ -61,11 +64,11 @@ public class Bubble2 : MonoBehaviour
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null)
         {
-            rb.isKinematic = false; // allow physics
-            rb.gravityScale = 1f;   // enable gravity
+            rb.isKinematic = false;
+            rb.gravityScale = 1f;
         }
 
-        // Destroy after 3 seconds so it has time to fall
-        Destroy(gameObject, 3f);
+
+        Destroy(gameObject, 0f);
     }
 }

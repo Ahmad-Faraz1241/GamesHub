@@ -20,7 +20,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/BubbleShooter/Bubbleshooter.unity
     guid: f9290906fab1fa24bacba0dfefd5fb40
-  - enabled: 1
-    path: Assets/Scenes/Bubble2.unity
+  - enabled: 0
+    path: Assets/Scenes/BubbleShooter/Bubble2.unity
     guid: f8f0f32d469013d4fbd51cf4940c908d
+  - enabled: 1
+    path: Assets/Scenes/Flappy Bird(voiced)/FlappyBird.unity
+    guid: 37750c3545aff97488c6efd212c6a745
   m_configObjects: {}
