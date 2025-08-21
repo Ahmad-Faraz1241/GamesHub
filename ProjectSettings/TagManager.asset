@@ -19,6 +19,7 @@ TagManager:
   - ShootBubble
   - FallingBubble
   - Wall
+  - Bomb
   layers:
   - Default
   - TransparentFX
@@ -28,9 +29,9 @@ TagManager:
   - UI
   - GridLayer
   - Wall
-  - 
-  - 
-  - 
+  - Shapes
+  - EdibleFull
+  - EdibleHalf
   - 
   - 
   - 
@@ -61,4 +62,16 @@ TagManager:
     locked: 0
   - name: Balls
     uniqueID: 4027756027
+    locked: 0
+  - name: BackGround
+    uniqueID: 4033358133
+    locked: 0
+  - name: Splash
+    uniqueID: 3331391339
+    locked: 0
+  - name: ForeGround
+    uniqueID: 2166771559
+    locked: 0
+  - name: Fruits
+    uniqueID: 333985169
     locked: 0
