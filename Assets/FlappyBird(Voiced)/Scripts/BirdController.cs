@@ -1,19 +1,37 @@
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class BirdController : MonoBehaviour
 {
     public float flapForce = 5f;
     private Rigidbody2D rb;
-    private bool isDead = false;
+    private bool isDead = true; // Start paused
 
-    // Voice control settings
-    public float loudnessThreshold = 0.1f; // Adjust this for sensitivity
+    // Score
+    private int score = 0;
+    public TextMeshProUGUI scoreText;
+
+    // UI
+    public Button startButton;
+
+    private Vector3 startPosition;
+
+    // Voice Control (Optional)
+    public float loudnessThreshold = 0.1f;
     private AudioClip micClip;
     private string micName;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        startPosition = transform.position;
+
+        rb.simulated = false;
+        UpdateScoreText();
+
+        startButton.gameObject.SetActive(true);
+        startButton.onClick.AddListener(StartGame);
 
 #if UNITY_ANDROID && !UNITY_EDITOR
         if (Microphone.devices.Length > 0)
@@ -32,14 +50,12 @@ public class BirdController : MonoBehaviour
     {
         if (isDead) return;
 
-        // Keyboard (Editor) or Touch
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
         {
             Flap();
         }
 
 #if UNITY_ANDROID && !UNITY_EDITOR
-        // Voice control
         if (micClip != null && GetLoudnessFromMic() > loudnessThreshold)
         {
             Flap();
@@ -54,10 +70,56 @@ public class BirdController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Bird collided with: " + collision.gameObject.name);
+        Die();
+    }
+
+    void Die()
+    {
         isDead = true;
-        rb.velocity = Vector2.zero; // stop bird movement
-        // TODO: Trigger game over screen or restart logic here
+        rb.simulated = false;
+        rb.velocity = Vector2.zero;
+
+        startButton.gameObject.SetActive(true);
+
+        // Destroy all existing pipes
+        foreach (var pipe in GameObject.FindGameObjectsWithTag("Pipe"))
+        {
+            Destroy(pipe);
+        }
+
+        // Stop pipe spawning
+        FindObjectOfType<PipeSpawner>().StopSpawning();
+    }
+
+    public void AddScore(int amount)
+    {
+        score += amount;
+        UpdateScoreText();
+    }
+
+    void UpdateScoreText()
+    {
+        if (scoreText != null)
+            scoreText.text = "" + score.ToString();
+    }
+
+    public void StartGame()
+    {
+        // Reset bird
+        transform.position = startPosition;
+        rb.velocity = Vector2.zero;
+        rb.simulated = true;
+
+        // Reset state
+        isDead = false;
+        score = 0;
+        UpdateScoreText();
+
+        // Hide button
+        startButton.gameObject.SetActive(false);
+
+        // Start spawning pipes
+        FindObjectOfType<PipeSpawner>().StartSpawning();
     }
 
 #if UNITY_ANDROID && !UNITY_EDITOR

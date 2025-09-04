@@ -1,46 +1,56 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Switches to the next scene on a two-finger vertical swipe.
+/// All scenes preload for faster switching, except ShapeSlicer which reloads fresh.
+/// </summary>
 public class TwoFingerSwipeSceneSwitcher : MonoBehaviour
 {
+    [Header("Swipe Settings")]
     public float minSwipeDistance = 100f;
 
     private Vector2 startTouchPos;
     private Vector2 endTouchPos;
-    private static string otherScene;
-    private static AsyncOperation preloadOperation;
 
-    // Time tracking
+    private static int nextSceneIndex;
+    private static AsyncOperation preloadOperation;
     private static float switchStartTime = -1f;
+
+    private const string reloadSceneName = "ShapeSlicer"; // Scene that should always reload fresh
 
     void Start()
     {
-        // If coming from another scene, calculate and log duration
+        // Log duration if returning from a scene switch
         if (switchStartTime > 0)
         {
-            float switchDuration = Time.time - switchStartTime;
-            Debug.Log("Scene switch duration: " + switchDuration.ToString("F3") + " seconds");
-            switchStartTime = -1f; // reset
+            float duration = Time.time - switchStartTime;
+           
+            switchStartTime = -1f;
         }
 
-        CacheOtherSceneName();
+        CacheNextSceneIndex();
         PreloadScene();
     }
 
     void Update()
     {
 #if UNITY_EDITOR
+        // Editor test with arrow keys
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow))
         {
-            ActivatePreloadedScene();
+            ActivateScene();
         }
 #else
+        // On device: detect two-finger swipe
         if (Input.touchCount == 2)
         {
             Touch touch = Input.GetTouch(0);
 
             if (touch.phase == TouchPhase.Began)
+            {
                 startTouchPos = touch.position;
+            }
             else if (touch.phase == TouchPhase.Ended)
             {
                 endTouchPos = touch.position;
@@ -50,52 +60,83 @@ public class TwoFingerSwipeSceneSwitcher : MonoBehaviour
 #endif
     }
 
+    /// <summary>
+    /// Detects if the gesture is a vertical two-finger swipe.
+    /// </summary>
     void DetectSwipe()
     {
         float swipeDistance = Vector2.Distance(startTouchPos, endTouchPos);
+
         if (swipeDistance >= minSwipeDistance)
         {
             Vector2 swipeDir = endTouchPos - startTouchPos;
 
+            // Only trigger on vertical swipe
             if (Mathf.Abs(swipeDir.y) > Mathf.Abs(swipeDir.x))
             {
-                ActivatePreloadedScene();
+                ActivateScene();
             }
         }
     }
 
-    void CacheOtherSceneName()
+    /// <summary>
+    /// Finds the next scene index (loops around).
+    /// </summary>
+    void CacheNextSceneIndex()
     {
-        string currentScene = SceneManager.GetActiveScene().name;
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
         int sceneCount = SceneManager.sceneCountInBuildSettings;
 
-        for (int i = 0; i < sceneCount; i++)
+        if (sceneCount <= 1)
         {
-            string path = SceneUtility.GetScenePathByBuildIndex(i);
-            string name = System.IO.Path.GetFileNameWithoutExtension(path);
-
-            if (name != currentScene)
-            {
-                otherScene = name;
-                break;
-            }
+            return;
         }
+
+        nextSceneIndex = (currentSceneIndex + 1) % sceneCount;
     }
 
+    /// <summary>
+    /// Preloads the next scene (including ShapeSlicer).
+    /// </summary>
     void PreloadScene()
     {
-        if (string.IsNullOrEmpty(otherScene)) return;
+        if (SceneManager.sceneCountInBuildSettings <= 1) return;
 
-        preloadOperation = SceneManager.LoadSceneAsync(otherScene);
+        string nextSceneName = GetSceneName(nextSceneIndex);
+
+        // Preload all scenes including ShapeSlicer
+        preloadOperation = SceneManager.LoadSceneAsync(nextSceneIndex);
         preloadOperation.allowSceneActivation = false;
+       
     }
 
-    void ActivatePreloadedScene()
+    /// <summary>
+    /// Activates the next scene (all scenes use preloading now).
+    /// </summary>
+    void ActivateScene()
     {
+        string nextSceneName = GetSceneName(nextSceneIndex);
+        switchStartTime = Time.time;
+
         if (preloadOperation != null && !preloadOperation.allowSceneActivation)
         {
-            switchStartTime = Time.time; // Record time before activation
-            preloadOperation.allowSceneActivation = true;
+            Debug.Log($"Activating preloaded scene: {nextSceneName}");
+            preloadOperation.allowSceneActivation = true; // activate preloaded
         }
+        else
+        {
+            // Fallback if preload failed
+           
+            SceneManager.LoadScene(nextSceneIndex);
+        }
+    }
+
+    /// <summary>
+    /// Helper: Get scene name by build index.
+    /// </summary>
+    private string GetSceneName(int buildIndex)
+    {
+        string path = SceneUtility.GetScenePathByBuildIndex(buildIndex);
+        return System.IO.Path.GetFileNameWithoutExtension(path);
     }
 }

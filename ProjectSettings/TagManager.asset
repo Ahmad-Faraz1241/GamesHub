@@ -20,6 +20,7 @@ TagManager:
   - FallingBubble
   - Wall
   - Bomb
+  - Pipe
   layers:
   - Default
   - TransparentFX

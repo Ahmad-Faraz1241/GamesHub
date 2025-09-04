@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
@@ -34,7 +34,7 @@ public class SpawnManager : MonoBehaviour
         if (lastCube != null)
             lastCube.gameObject.SetActive(false);
 
-        UIManager.Instance?.ShowPlayButton();
+        UIManager.Instance?.ShowMainMenu(); // Show Main Menu at game start
     }
 
     private void Update()
@@ -62,12 +62,12 @@ public class SpawnManager : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("=== Starting Game ===");
-        Time.timeScale = 1f; // Ensure game is unpaused
+        Time.timeScale = 1f;
         EnsureLastCube();
 
         if (lastCube == null)
         {
-            Debug.LogError("Cannot start game — lastCube is missing!");
+            Debug.LogError("Cannot start game ï¿½ lastCube is missing!");
             return;
         }
 
@@ -89,14 +89,13 @@ public class SpawnManager : MonoBehaviour
 
         ClearScene();
         SpawnNewCube();
-        UIManager.Instance?.HidePlayButton();
         ScoreManager.Instance?.ResetScore();
     }
 
     public void GameOver()
     {
         isGameRunning = false;
-        UIManager.Instance?.ShowPlayButton();
+        UIManager.Instance?.ShowGameOverPanel();
     }
 
     public void SpawnNewCube()

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,9 +9,11 @@ public class GameManager : MonoBehaviour
 
     [Header("UI References")]
     public GameObject mainMenuPanel;
-    public GameObject restartButton;
-    public GameObject goBackButton;
-    public GameObject quitButton;
+    public GameObject restartButton;     // Optional
+    public GameObject goBackButton;      // Optional
+    public GameObject loadingPanel;
+    public GameObject crashPanel;
+    public Slider loadingSlider;
     public TMP_Text coinText;
 
     [Header("Game Objects")]
@@ -35,9 +38,15 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = 1f;
+
         mainMenuPanel.SetActive(true);
-        restartButton.SetActive(false);
-        goBackButton.SetActive(false);
+        loadingPanel.SetActive(false);
+        crashPanel.SetActive(false);
+
+        restartButton?.SetActive(false);
+        goBackButton?.SetActive(false);
+
         player.SetActive(false);
         tileSpawner.SetActive(false);
 
@@ -51,12 +60,39 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        StartCoroutine(StartGameRoutine());
+    }
+
+    private IEnumerator StartGameRoutine()
+    {
+        loadingPanel.SetActive(true);
+        crashPanel.SetActive(false);
+
+        if (loadingSlider != null)
+            loadingSlider.value = 0f;
+
+        float duration = 2f;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = Mathf.Clamp01(elapsed / duration);
+
+            if (loadingSlider != null)
+                loadingSlider.value = progress;
+
+            yield return null;
+        }
+
         coinCount = 0;
         UpdateCoinUI();
 
         mainMenuPanel.SetActive(false);
-        restartButton.SetActive(true);
-        goBackButton.SetActive(true);
+        restartButton?.SetActive(false);
+        goBackButton?.SetActive(false);
+        loadingPanel.SetActive(false);
+
         player.SetActive(true);
         tileSpawner.SetActive(true);
         gameStarted = true;
@@ -64,12 +100,36 @@ public class GameManager : MonoBehaviour
         ResetPlayerPosition();
         ResetTiles();
 
-        if (runner != null)
-            runner.ResetMovement();
+        runner?.ResetMovement();
     }
 
     public void RestartGame()
     {
+        StartCoroutine(RestartGameRoutine());
+    }
+
+    private IEnumerator RestartGameRoutine()
+    {
+        loadingPanel.SetActive(true);
+        crashPanel.SetActive(false);
+
+        if (loadingSlider != null)
+            loadingSlider.value = 0f;
+
+        float duration = 2f;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = Mathf.Clamp01(elapsed / duration);
+
+            if (loadingSlider != null)
+                loadingSlider.value = progress;
+
+            yield return null;
+        }
+
         coinCount = 0;
         UpdateCoinUI();
 
@@ -82,14 +142,16 @@ public class GameManager : MonoBehaviour
         player.SetActive(true);
         tileSpawner.SetActive(true);
 
-        if (runner != null)
-            runner.ResetMovement();
+        runner?.ResetMovement();
+
+        loadingPanel.SetActive(false);
     }
 
     public void GoBackToMenu()
     {
-        restartButton.SetActive(false);
-        goBackButton.SetActive(false);
+        restartButton?.SetActive(false);
+        goBackButton?.SetActive(false);
+        crashPanel.SetActive(false);
         mainMenuPanel.SetActive(true);
 
         player.SetActive(false);
@@ -99,11 +161,6 @@ public class GameManager : MonoBehaviour
         ResetTiles();
 
         gameStarted = false;
-    }
-
-    public void QuitGame()
-    {
-        Application.Quit();
     }
 
     public void AddCoin()
@@ -141,4 +198,24 @@ public class GameManager : MonoBehaviour
         if (spawner != null)
             spawner.ResetSpawner();
     }
+
+    // Show crash panel after delay
+    public void ShowCrashPanel()
+    {
+        StartCoroutine(ShowCrashPanelWithDelay());
+    }
+
+    private IEnumerator ShowCrashPanelWithDelay()
+    {
+        yield return new WaitForSeconds(3f);  // Delay before showing crash panel
+
+        crashPanel.SetActive(true);
+
+        if (restartButton != null)
+            restartButton.SetActive(true);
+
+        if (goBackButton != null)
+            goBackButton.SetActive(true);
+    }
+
 }

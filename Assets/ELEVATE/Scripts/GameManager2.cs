@@ -13,7 +13,7 @@ public class GameManager2 : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("GameManager2: Starting Game");
-        Time.timeScale = 1f; // Always resume game
+        Time.timeScale = 1f;
         isGameRunning = true;
         SpawnManager.Instance.StartGame();
     }
@@ -22,6 +22,6 @@ public class GameManager2 : MonoBehaviour
     {
         Debug.Log("GameManager2: Game Over");
         isGameRunning = false;
-        UIManager.Instance?.ShowPlayButton();
+        UIManager.Instance?.ShowGameOverPanel();
     }
 }

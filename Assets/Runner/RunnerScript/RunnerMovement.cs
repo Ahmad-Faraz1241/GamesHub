@@ -100,6 +100,8 @@ public class RunnerMovement : MonoBehaviour
 
     private void Die()
     {
+        if (isDead) return;
+
         isDead = true;
         forwardSpeed = 0f;
         animator.SetTrigger("Hit");
@@ -107,6 +109,8 @@ public class RunnerMovement : MonoBehaviour
 
         if (collideSound && !collideSound.isPlaying)
             collideSound.Play();
+
+        GameManager.Instance?.ShowCrashPanel();   // 👈 show crash panel
     }
 
     private IEnumerator Slide()
@@ -138,7 +142,7 @@ public class RunnerMovement : MonoBehaviour
 
     public void IncreaseSpeed(float moveAmount, float animAmount)
     {
-        forwardSpeed = Mathf.Min(forwardSpeed + moveAmount, 15f);      // Cap at 15
-        animator.speed = Mathf.Min(animator.speed + animAmount, 2f);   // Cap at 2
+        forwardSpeed = Mathf.Min(forwardSpeed + moveAmount, 30f);      // Cap at 15
+        animator.speed = Mathf.Min(animator.speed + animAmount, 1.3f);   // Cap at 2
     }
 }

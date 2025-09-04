@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Bomb3D : FruitSlicer3D
 {
@@ -6,17 +6,23 @@ public class Bomb3D : FruitSlicer3D
 
     public override void Slice(Vector3 swipeDirection)
     {
-        // Play bomb sound
+        // Prevent multiple slices
+        if (!gameObject.activeInHierarchy) return;
+
+        // Play slice sound if any
         if (sliceSound != null)
             AudioSource.PlayClipAtPoint(sliceSound, Camera.main.transform.position, sliceVolume);
 
-        // Stop spawning
+        // Stop spawner
         if (spawner != null)
             spawner.StopSpawning();
 
-        // Optional: explosion effect here
+        // Notify GameManager
+        GameManager3D gm = FindObjectOfType<GameManager3D>();
+        if (gm != null)
+            gm.OnBombSliced();
 
-        // Disable bomb
+        // Deactivate bomb for pooling
         gameObject.SetActive(false);
     }
 }

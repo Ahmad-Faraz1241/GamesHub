@@ -2,13 +2,19 @@ using UnityEngine;
 
 public class PipeMovement : MonoBehaviour
 {
-    public float speed = 2f;
+    public float baseSpeed = 2f;
+    public float maxSpeed = 6f;
+    private float currentSpeed = 2f;
+
+    public void SetDifficulty(float difficultyPercent)
+    {
+        currentSpeed = Mathf.Lerp(baseSpeed, maxSpeed, difficultyPercent);
+    }
 
     void Update()
     {
-        transform.position += Vector3.left * speed * Time.deltaTime;
+        transform.position += Vector3.left * currentSpeed * Time.deltaTime;
 
-        // Destroy when off-screen
         if (transform.position.x < -10f)
         {
             Destroy(gameObject);

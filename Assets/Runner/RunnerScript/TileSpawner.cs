@@ -3,21 +3,12 @@ using UnityEngine;
 
 public class TileSpawner : MonoBehaviour
 {
-    [Header("Tile Setup")]
     public GameObject defaultTilePrefab;
     public GameObject[] segmentPrefabs;
-
-    [Tooltip("Set this to the Z-size of your tile (e.g., 20 if your tile is 1x1x20)")]
     public float segmentLength = 20f;
-
-    [Header("Player Reference")]
     public Transform player;
-
-    [Header("Spawning Settings")]
     public int initialSegments = 5;
     public int maxSegmentsOnScreen = 6;
-
-    [Header("Slope Settings")]
     public float yOffsetPerTile = 0f;
 
     private float spawnZ = 0f;
@@ -28,7 +19,6 @@ public class TileSpawner : MonoBehaviour
 
     void Start()
     {
-        // Auto-detect tile length if not set
         if (segmentLength <= 0 && segmentPrefabs.Length > 0)
         {
             segmentLength = GetSegmentLength(segmentPrefabs[0]);
@@ -71,17 +61,9 @@ public class TileSpawner : MonoBehaviour
         }
         else
         {
-            int index;
-            do
-            {
-                index = Random.Range(0, segmentPrefabs.Length);
-            } while (segmentPrefabs.Length > 1 && index == lastPrefabIndex);
-
-            lastPrefabIndex = index;
-            prefabToSpawn = segmentPrefabs[index];
+            prefabToSpawn = GetRandomTile(segmentPrefabs);
         }
 
-        // Corrected: place the tile at the start of the next Z position
         Vector3 spawnPos = new Vector3(0, currentY, spawnZ);
         GameObject newSeg = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
         activeSegments.Add(newSeg);
@@ -90,6 +72,18 @@ public class TileSpawner : MonoBehaviour
         currentY -= yOffsetPerTile;
 
         ResetCoinsInSegment(newSeg);
+    }
+
+    GameObject GetRandomTile(GameObject[] prefabs)
+    {
+        int index;
+        do
+        {
+            index = Random.Range(0, prefabs.Length);
+        } while (prefabs.Length > 1 && index == lastPrefabIndex);
+
+        lastPrefabIndex = index;
+        return prefabs[index];
     }
 
     void ResetCoinsInSegment(GameObject tile)
@@ -125,6 +119,6 @@ public class TileSpawner : MonoBehaviour
         {
             return renderer.bounds.size.z;
         }
-        return 20f; // fallback
+        return 20f;
     }
 }

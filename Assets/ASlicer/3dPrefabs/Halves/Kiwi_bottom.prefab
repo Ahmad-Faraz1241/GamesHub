@@ -82,6 +82,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 78a89e415b6b18b48b7536377faae5e1, type: 3}
       insertIndex: -1
       addedObject: {fileID: -1330953389510811120}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 78a89e415b6b18b48b7536377faae5e1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -170603382623035103}
   m_SourcePrefab: {fileID: 100100000, guid: 78a89e415b6b18b48b7536377faae5e1, type: 3}
 --- !u!1 &7783196899305352183 stripped
 GameObject:
@@ -137,3 +140,25 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!114 &-170603382623035103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7783196899305352183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c8bf3ac05c12754897aa408221f33d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isFruit: 1
+  half1Prefab: {fileID: 0}
+  half2Prefab: {fileID: 0}
+  splashPrefab: {fileID: 0}
+  scatterForce: 5
+  halfLifetime: 2
+  sliceSound: {fileID: 0}
+  sliceVolume: 1
+  splashPoolSize: 20
+  halfPoolSize: 20

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5096354938310201067}
   - component: {fileID: -3966873470120583466}
   - component: {fileID: -4257580556319210707}
+  - component: {fileID: 6895259304272459554}
   m_Layer: 9
   m_Name: Bomb
   m_TagString: Untagged
@@ -97,14 +98,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e18b0a8a85d2e884680a4f832bab440f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isFruit: 0
   half1Prefab: {fileID: 0}
   half2Prefab: {fileID: 0}
   splashPrefab: {fileID: 0}
   scatterForce: 5
-  lifetime: 2
+  halfLifetime: 2
   sliceSound: {fileID: 8300000, guid: 85ee80d5855d8204687b581069ed4392, type: 3}
   sliceVolume: 1
+  splashPoolSize: 10
+  halfPoolSize: 10
   spawner: {fileID: 0}
+  alarmSource: {fileID: 0}
 --- !u!135 &-4257580556319210707
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -126,3 +131,30 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &6895259304272459554
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7272749044450322460}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

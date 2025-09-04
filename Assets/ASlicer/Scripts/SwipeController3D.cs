@@ -3,33 +3,43 @@ using System.Collections.Generic;
 
 public class SwipeController3D : MonoBehaviour
 {
-    public float minSwipeDistance = 0.05f;
-    public float swipeRadius = 0.2f;
-    public LayerMask sliceMask;
+    [Header("Swipe Settings")]
+    public float minSwipeDistance = 0.05f;   // Minimum movement to register a slice
+    public float swipeRadius = 0.2f;         // SphereCast radius
+    public LayerMask sliceMask;              // Layer(s) of slicable objects
 
-    public int maxPositions = 15;
-    public float trailWidth = 0.1f;
+    [Header("Trail Settings")]
+    public int maxPositions = 15;            // Max positions stored for trail
+    public float trailWidth = 0.1f;          // Trail start width
+    public Gradient trailColor;              // Optional color gradient
 
     private Camera cam;
     private Vector3 lastPos;
     private LineRenderer trail;
     private Queue<Vector3> trailPositions = new Queue<Vector3>();
 
-    void Start()
+    void Awake()
     {
         cam = Camera.main;
 
+        // Create trail
         GameObject trailObj = new GameObject("SwipeTrail");
         trailObj.transform.parent = transform;
 
         trail = trailObj.AddComponent<LineRenderer>();
         trail.material = new Material(Shader.Find("Sprites/Default"));
-        trail.startColor = Color.white;
-        trail.endColor = new Color(1f, 1f, 1f, 0.2f);
         trail.startWidth = trailWidth;
         trail.endWidth = 0.02f;
         trail.positionCount = 0;
         trail.numCapVertices = 5;
+
+        if (trailColor != null)
+            trail.colorGradient = trailColor;
+        else
+        {
+            trail.startColor = Color.white;
+            trail.endColor = new Color(1f, 1f, 1f, 0.2f);
+        }
     }
 
     void Update()
@@ -42,6 +52,7 @@ public class SwipeController3D : MonoBehaviour
         UpdateTrail();
     }
 
+    #region Input Handling
     void HandleMouseInput()
     {
         if (Input.GetMouseButtonDown(0))
@@ -62,44 +73,43 @@ public class SwipeController3D : MonoBehaviour
 
     void HandleTouchInput()
     {
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-            Vector3 touchPos = ScreenToWorld(touch.position);
+        if (Input.touchCount == 0) return;
 
-            if (touch.phase == TouchPhase.Began)
-            {
-                lastPos = touchPos;
-                trailPositions.Clear();
-            }
-            else if (touch.phase == TouchPhase.Moved)
-                ProcessSwipe(touchPos);
-            else if (touch.phase == TouchPhase.Ended)
-                trailPositions.Clear();
+        Touch touch = Input.GetTouch(0);
+        Vector3 touchPos = ScreenToWorld(touch.position);
+
+        if (touch.phase == TouchPhase.Began)
+        {
+            lastPos = touchPos;
+            trailPositions.Clear();
         }
+        else if (touch.phase == TouchPhase.Moved)
+            ProcessSwipe(touchPos);
+        else if (touch.phase == TouchPhase.Ended)
+            trailPositions.Clear();
     }
+    #endregion
 
     void ProcessSwipe(Vector3 newPos)
     {
-        if (Vector3.Distance(lastPos, newPos) > minSwipeDistance)
+        if (Vector3.Distance(lastPos, newPos) < minSwipeDistance) return;
+
+        trailPositions.Enqueue(newPos);
+        if (trailPositions.Count > maxPositions)
+            trailPositions.Dequeue();
+
+        Vector3 dir = newPos - lastPos;
+        float dist = dir.magnitude;
+
+        // SphereCast to detect sliceable objects
+        if (Physics.SphereCast(lastPos, swipeRadius, dir.normalized, out RaycastHit hit, dist, sliceMask))
         {
-            trailPositions.Enqueue(newPos);
-            if (trailPositions.Count > maxPositions)
-                trailPositions.Dequeue();
-
-            Vector3 dir = newPos - lastPos;
-            float dist = dir.magnitude;
-
-            if (Physics.SphereCast(lastPos, swipeRadius, dir.normalized, out RaycastHit hit, dist, sliceMask))
-            {
-                var slicer = hit.collider.GetComponent<FruitSlicer3D>();
-                if (slicer != null)
-                    slicer.Slice(dir.normalized);
-            }
-
-            Debug.DrawLine(lastPos, newPos, Color.red, 0.2f);
-            lastPos = newPos;
+            var slicer = hit.collider.GetComponent<FruitSlicer3D>();
+            if (slicer != null)
+                slicer.Slice(dir.normalized);
         }
+
+        lastPos = newPos;
     }
 
     void UpdateTrail()

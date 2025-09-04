@@ -82,6 +82,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 87aff3ff4d2ab784bbefb0e24f32d321, type: 3}
       insertIndex: -1
       addedObject: {fileID: -4337989104730580372}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 87aff3ff4d2ab784bbefb0e24f32d321, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -2983731922730542455}
   m_SourcePrefab: {fileID: 100100000, guid: 87aff3ff4d2ab784bbefb0e24f32d321, type: 3}
 --- !u!1 &6480188343457714040 stripped
 GameObject:
@@ -126,6 +129,35 @@ MonoBehaviour:
   half2Prefab: {fileID: 7499674288594137809, guid: eecd9912270ad7442a1f41d49ff3a77a, type: 3}
   splashPrefab: {fileID: 4911765466340915878, guid: 8af37c94c1e5ceb4090a72fa2a24bbf5, type: 3}
   scatterForce: 5
-  lifetime: 2
+  halfLifetime: 2
   sliceSound: {fileID: 8300000, guid: a3b5ddc069250494abd7050ce6ce6975, type: 3}
   sliceVolume: 1
+  splashPoolSize: 10
+  halfPoolSize: 10
+--- !u!54 &-2983731922730542455
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6480188343457714040}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
