@@ -76,3 +76,21 @@ TagManager:
   - name: Fruits
     uniqueID: 333985169
     locked: 0
+  - name: Sky
+    uniqueID: 4018249923
+    locked: 0
+  - name: Clouds
+    uniqueID: 4133128249
+    locked: 0
+  - name: Tree
+    uniqueID: 2803174125
+    locked: 0
+  - name: Mountains
+    uniqueID: 2609438571
+    locked: 0
+  - name: Grounddown
+    uniqueID: 2309486201
+    locked: 0
+  - name: Bird
+    uniqueID: 1772378081
+    locked: 0
