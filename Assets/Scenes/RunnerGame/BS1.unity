@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 135a7036ca1a07b4e9e162d80e6b6e77, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: f14e791cab3ea0c4397ab4827d05bebc, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -2751,18 +2751,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22e04e98c86c54948a3033812fd3febe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultTilePrefab: {fileID: 1635754575675164639, guid: 57d24627dc432fd4d8e1662bf30b0a65, type: 3}
-  segmentPrefabs:
-  - {fileID: 1635754575675164639, guid: 86211e30a0a2ce849baf9d087d029107, type: 3}
-  - {fileID: 1635754575675164639, guid: 5d84ecc2e5cc85742b53d93cc8b871a1, type: 3}
-  - {fileID: 1635754575675164639, guid: 94804c69910210a45ab296ee5148b6c6, type: 3}
-  - {fileID: 1635754575675164639, guid: 7587503680720174788a9cffdb4a396e, type: 3}
-  - {fileID: 1635754575675164639, guid: be89d5ec252be30489c0208cc1e1b06e, type: 3}
+  defaultTilePrefab: {fileID: 1756171093311242559, guid: 57d24627dc432fd4d8e1662bf30b0a65, type: 3}
+  easyTiles:
+  - {fileID: 12497818696860540, guid: 86211e30a0a2ce849baf9d087d029107, type: 3}
+  - {fileID: 4119701384381954045, guid: 5d84ecc2e5cc85742b53d93cc8b871a1, type: 3}
+  - {fileID: 296086146531716136, guid: 94804c69910210a45ab296ee5148b6c6, type: 3}
+  - {fileID: 9031467689209703823, guid: 7587503680720174788a9cffdb4a396e, type: 3}
+  - {fileID: 6546991779547929684, guid: be89d5ec252be30489c0208cc1e1b06e, type: 3}
+  - {fileID: 7722098651696202462, guid: d0ab65533242edd4eb841e0f488263f0, type: 3}
+  hardTiles:
+  - {fileID: 5182487510274641723, guid: f77dbd84740ac75418af001d427d794e, type: 3}
+  - {fileID: 4149378758513678028, guid: 117a455d13ac7844eb6aa89c771ea413, type: 3}
+  - {fileID: 7753529435198521695, guid: eaf0e566a70bf44449b48e996eeb8d95, type: 3}
+  - {fileID: 7753529435198521695, guid: 1381941c0eff99f41b7c62f26edf2c06, type: 3}
+  - {fileID: 1045120236521648888, guid: a93958a41101db9459db93c70b290992, type: 3}
   segmentLength: 99
   player: {fileID: 407019563}
   initialSegments: 4
   maxSegmentsOnScreen: 4
   yOffsetPerTile: 0
+  easyDuration: 60
 --- !u!1 &1818294217
 GameObject:
   m_ObjectHideFlags: 0
@@ -2827,8 +2835,8 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 0.79622644, g: 0.70634407, b: 0.4612104, a: 1}
-  m_Intensity: 1.2
+  m_Color: {r: 0.85660374, g: 0.7818197, b: 0.58022785, a: 1}
+  m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208

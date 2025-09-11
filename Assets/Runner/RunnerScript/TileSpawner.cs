@@ -3,25 +3,33 @@ using UnityEngine;
 
 public class TileSpawner : MonoBehaviour
 {
+    [Header("Tile Prefabs")]
     public GameObject defaultTilePrefab;
-    public GameObject[] segmentPrefabs;
+    public GameObject[] easyTiles;  // Tiles for first minute
+    public GameObject[] hardTiles;  // Tiles after first minute
+
+    [Header("Spawn Settings")]
     public float segmentLength = 20f;
     public Transform player;
     public int initialSegments = 5;
     public int maxSegmentsOnScreen = 6;
     public float yOffsetPerTile = 0f;
 
+    [Header("Difficulty Settings")]
+    public float easyDuration = 60f;  // time in seconds to spawn easy tiles
+
     private float spawnZ = 0f;
     private float currentY = 0f;
     private List<GameObject> activeSegments = new();
     private int lastPrefabIndex = -1;
     private bool usedDefaultTile = false;
+    private float elapsedTime = 0f;
 
     void Start()
     {
-        if (segmentLength <= 0 && segmentPrefabs.Length > 0)
+        if (segmentLength <= 0 && easyTiles.Length > 0)
         {
-            segmentLength = GetSegmentLength(segmentPrefabs[0]);
+            segmentLength = GetSegmentLength(easyTiles[0]);
         }
 
         for (int i = 0; i < initialSegments; i++)
@@ -32,6 +40,8 @@ public class TileSpawner : MonoBehaviour
 
     void Update()
     {
+        elapsedTime += Time.deltaTime;
+
         if (player.position.z > spawnZ - (segmentLength * (maxSegmentsOnScreen - 1)))
         {
             SpawnSegment();
@@ -54,6 +64,7 @@ public class TileSpawner : MonoBehaviour
     {
         GameObject prefabToSpawn;
 
+        // First tile is always default
         if (!usedDefaultTile && defaultTilePrefab != null)
         {
             prefabToSpawn = defaultTilePrefab;
@@ -61,7 +72,11 @@ public class TileSpawner : MonoBehaviour
         }
         else
         {
-            prefabToSpawn = GetRandomTile(segmentPrefabs);
+            // Check elapsed time to decide difficulty
+            if (elapsedTime < easyDuration)
+                prefabToSpawn = GetRandomTile(easyTiles);
+            else
+                prefabToSpawn = GetRandomTile(hardTiles);
         }
 
         Vector3 spawnPos = new Vector3(0, currentY, spawnZ);
@@ -105,6 +120,7 @@ public class TileSpawner : MonoBehaviour
         spawnZ = 0f;
         currentY = 0f;
         usedDefaultTile = false;
+        elapsedTime = 0f;
 
         for (int i = 0; i < initialSegments; i++)
         {
