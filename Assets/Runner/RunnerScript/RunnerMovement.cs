@@ -142,7 +142,7 @@ public class RunnerMovement : MonoBehaviour
 
     public void IncreaseSpeed(float moveAmount, float animAmount)
     {
-        forwardSpeed = Mathf.Min(forwardSpeed + moveAmount, 30f);      // Cap at 15
-        animator.speed = Mathf.Min(animator.speed + animAmount, 1.3f);   // Cap at 2
+        forwardSpeed = Mathf.Min(forwardSpeed + moveAmount, 30f);      
+        animator.speed = Mathf.Min(animator.speed + animAmount, 1.3f);   
     }
 }
